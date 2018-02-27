@@ -18,6 +18,8 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private List<Card> mCard;
     private Boolean expanded = false;
+    private int expandedHeight;
+    private int margin;
 
     RecyclerAdapter(List<Card> mCard) {
         this.mCard = mCard;
@@ -51,6 +53,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         final TextView textView = linear.findViewById(R.id.textView);
         final CardView cardView = linear.findViewById(R.id.card);
 
+        expandedHeight = holder.itemView.getResources().getDimensionPixelSize(R.dimen.height);
+        margin = holder.itemView.getResources().getDimensionPixelSize(R.dimen.margin);
+
         textView.setText(mCard.get(position).getColorName());
         textView.setTextColor(mCard.get(position).getColor());
         cardView.setCardBackgroundColor(holder.itemView.getResources().getColor(R.color.gray));
@@ -79,7 +84,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         textView.setTextColor(color);
         cardView.setCardBackgroundColor(holder.itemView.getResources().getColor(R.color.gray));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(10, 10, 10, 10);
+        layoutParams.setMargins(margin, margin, margin, margin);
         cardView.setLayoutParams(layoutParams);
 
     }
@@ -89,8 +94,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         textView.setTextColor(Color.BLACK);
         cardView.setCardBackgroundColor(color);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) cardView.getLayoutParams();
-        layoutParams.height = 1000;
-        layoutParams.setMargins(10, 10, 10, 10);
+        layoutParams.height = expandedHeight;
+        layoutParams.setMargins(margin, margin, margin, margin);
         cardView.setLayoutParams(layoutParams);
 
     }
