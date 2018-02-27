@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TestApp</string>
+    <string name="toast_text">Ошибка при загрузке XML-документа:</string>
 </resources>

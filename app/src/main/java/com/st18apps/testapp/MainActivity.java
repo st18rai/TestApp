@@ -1,13 +1,10 @@
 package com.st18apps.testapp;
 
 import android.graphics.Color;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -15,22 +12,19 @@ import org.xmlpull.v1.XmlPullParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerAdapter.Callback {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private Parcelable mListState;
-    private String LIST_STATE_KEY = "list_state";
-    private String TAG = "mytag";
+    private RecyclerAdapter adapter;
+    private List<Card> cards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate: ");
-
-        List<Card> cards = new ArrayList<>();
+        cards = new ArrayList<>();
 
         XmlPullParser parser = getResources().getXml(R.xml.colors_for_list);
 
@@ -44,47 +38,22 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (Throwable t) {
             Toast.makeText(this,
-                    "Ошибка при загрузке XML-документа: " + t.toString(), Toast.LENGTH_LONG)
+                    getString(R.string.toast_text) + t.toString(), Toast.LENGTH_LONG)
                     .show();
         }
 
         recyclerView = findViewById(R.id.recycler);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        RecyclerAdapter adapter = new RecyclerAdapter(cards);
+        adapter = new RecyclerAdapter(cards, this);
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        Log.d(TAG, "onResume: ");
-
-        if (mListState != null) {
-            linearLayoutManager.onRestoreInstanceState(mListState);
-        }
-
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-
-        Log.d(TAG, "onSaveInstanceState: ");
-        // Save list state
-        mListState = linearLayoutManager.onSaveInstanceState();
-        outState.putParcelable(LIST_STATE_KEY, mListState);
-
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        Log.d(TAG, "onRestoreInstanceState: ");
-        if (savedInstanceState != null)
-            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+    public void onItemClick(int position) {
+        cards.get(position).toggle();
+        adapter.notifyItemChanged(position);
     }
 }

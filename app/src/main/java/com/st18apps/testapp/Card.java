@@ -8,6 +8,7 @@ public class Card {
 
     private String colorName;
     private int color;
+    private boolean expanded;
 
     public Card(String colorName, int color) {
         this.colorName = colorName;
@@ -28,6 +29,14 @@ public class Card {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public boolean isPressed() {
+        return expanded;
+    }
+
+    public void toggle() {
+        expanded = !expanded;
     }
 
 }

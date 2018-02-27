@@ -17,24 +17,33 @@ import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private List<Card> mCard;
-    private Boolean expanded = false;
+    private final Callback mListener;
     private int expandedHeight;
     private int margin;
 
-    RecyclerAdapter(List<Card> mCard) {
+    RecyclerAdapter(List<Card> mCard, Callback mListener) {
         this.mCard = mCard;
+        this.mListener = mListener;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private final Callback mListener;
 
         //Определение класса ViewHolder
         private LinearLayout mLinearLayout;
 
-        ViewHolder(LinearLayout v) {
+        ViewHolder(LinearLayout v, Callback mListener) {
             super(v);
+            this.mListener = mListener;
             mLinearLayout = v;
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View view) {
+            mListener.onItemClick(getAdapterPosition());
+        }
     }
 
     @Override
@@ -42,7 +51,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         //Создание нового представления
         LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recycler_item, parent, false);
-        return new ViewHolder(linearLayout);
+        return new ViewHolder(linearLayout, mListener);
     }
 
     @Override
@@ -53,25 +62,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         final TextView textView = linear.findViewById(R.id.textView);
         final CardView cardView = linear.findViewById(R.id.card);
 
+        final Card card = mCard.get(position);
+
         expandedHeight = holder.itemView.getResources().getDimensionPixelSize(R.dimen.height);
         margin = holder.itemView.getResources().getDimensionPixelSize(R.dimen.margin);
 
-        textView.setText(mCard.get(position).getColorName());
-        textView.setTextColor(mCard.get(position).getColor());
-        cardView.setCardBackgroundColor(holder.itemView.getResources().getColor(R.color.gray));
+        textView.setText(card.getColorName());
 
-        cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!expanded) {
-                    cardExpand(cardView, textView, mCard.get(holder.getAdapterPosition()).getColor());
-                    expanded = true;
-                } else {
-                    cardCollapse(cardView, textView, mCard.get(holder.getAdapterPosition()).getColor(), holder);
-                    expanded = false;
-                }
-            }
-        });
+        if (card.isPressed()) {
+            cardExpand(cardView, textView, mCard.get(holder.getAdapterPosition()).getColor());
+        } else {
+            cardCollapse(cardView, textView, mCard.get(holder.getAdapterPosition()).getColor(), holder);
+        }
 
     }
 
@@ -89,7 +91,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     }
 
-
     private void cardExpand(CardView cardView, TextView textView, int color) {
         textView.setTextColor(Color.BLACK);
         cardView.setCardBackgroundColor(color);
@@ -100,4 +101,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     }
 
+    public interface Callback {
+        void onItemClick(int position);
+    }
 }
